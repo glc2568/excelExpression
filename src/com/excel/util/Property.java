@@ -50,7 +50,6 @@ public class Property {
 
         try {
             System.setProperty("log4j.defaultInitOverride", "1");
-//            DOMConfigurator.configure(configurationPath.toString());
             PropertyConfigurator.configure(configurationPath.toString());
         } catch (Exception e) {
             e.printStackTrace();

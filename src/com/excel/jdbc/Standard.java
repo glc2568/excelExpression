@@ -14,15 +14,11 @@ import java.sql.Statement;
 public class Standard {
     private static final Logger log = LoggerFactory.getLogger(Standard.class);
     public static void main(String[] args) throws IOException {
-//        System.setProperty("log4j.configuration","config/log4j.properties");
-//        Property.
-        Property.initLog4j();
-        Standard.log.debug("hell");
-        log.info("hello1231");
-        getSqlcon();
+        String sql = "select * from klnf_dkjcsx";
+        getSqlcon(sql);
     }
 
-    public static void getSqlcon(){
+    public static void getSqlcon(String sql){
         //获取连接
         Connection con = null;
         //创建statement对象
@@ -38,7 +34,8 @@ public class Standard {
             con = DriverManager.getConnection(url, username, password);
             statement = con.createStatement();
             //发送并执行sql
-            String sql = "select * from klnf_dkjcsx";
+//            String sql = "select * from klnf_dkjcsx";
+//            statement.executeUpdate();
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 String name = resultSet.getString("chanpdma");
