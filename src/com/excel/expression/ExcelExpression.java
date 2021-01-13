@@ -1,9 +1,14 @@
 package com.excel.expression;
 
+import com.excel.jdbc.Standard;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class ExcelExpression extends JFrame  implements ActionListener {
     JTextField type;
@@ -14,10 +19,13 @@ public class ExcelExpression extends JFrame  implements ActionListener {
     JTextField acTualFinish;// 实际完成百分比
     JTextField holidays;// 为空时默认（不剔除节假日，周六周日）
     JComboBox comboBox;
+    JFileChooser jfc=new  JFileChooser(new File("."));
     //窗口：
     JFrame window;
-    Button btn1,btn2;//按钮
+    JButton btn1,btn2;//按钮
+    JButton bOpen,bExe;
     JTextArea	tarea;//文本框
+    String filePath = "";
     //初始化
     public ExcelExpression(){
         window=new JFrame("ExcelExpression");
@@ -70,6 +78,13 @@ public class ExcelExpression extends JFrame  implements ActionListener {
         holidays.setBounds(115, 175, 100, 30);
         window.add(holidays);
 
+        JLabel adpmFile =new JLabel("导入adpm文件：");
+        adpmFile.setBounds(20,195,110,50);
+        window.add(adpmFile);
+        holidays=new JTextField();
+        holidays.setBounds(115, 175, 100, 30);
+        window.add(holidays);
+
 //        JLabel typeIn =new JLabel("选择类型：");
 //        typeIn.setBounds(350,15,100,50);
 //        window.add(typeIn);
@@ -108,10 +123,19 @@ public class ExcelExpression extends JFrame  implements ActionListener {
         desc5.setBounds(350,115,300,100);
         window.add(desc5);
 
-        btn1 = new Button("转    换");//创建按钮
+        btn1 = new JButton("转    换");//创建按钮
         btn1.setBounds(450, 250,100,40);
         window.add(btn1);
 
+        bOpen = new JButton("选择文件");//创建按钮
+        bOpen.setBounds(50, 250,100,40);
+        bOpen.addActionListener(this);
+        window.add(bOpen);
+
+        bExe = new JButton("保存数据");//创建按钮
+        bExe.setBounds(250, 250,100,40);
+        bExe.addActionListener(this);
+        window.add(bExe);
 //        btn2 = new Button("退    出");//创建按钮
 //        btn2.setBounds(450, 250,100,40);
 //        window.add(btn2);
@@ -145,6 +169,36 @@ public class ExcelExpression extends JFrame  implements ActionListener {
 
         if (e.getSource() == btn2) {//按钮3事件处理
             System.exit(0);//关闭程序
+        }
+
+        if (e.getSource() == bOpen) {//按钮3事件处理
+            //打开文件选择器对话框
+            int status=jfc.showOpenDialog(this);
+            //没有选打开按钮结果提示
+            if(status!=JFileChooser.APPROVE_OPTION){
+                tarea.setText("没有选中文件");
+            }
+            else{
+                try {
+                    //被选中的文件保存为文件对象
+                    File file=jfc.getSelectedFile();
+                    filePath = file.getAbsolutePath();
+                    tarea.setText(filePath);
+                } catch (Exception e1) {
+                    System.out.println("系统没有找到此文件");
+                    e1.printStackTrace();
+                }
+            }
+
+        }
+
+        if (e.getSource() == bExe) {//按钮3事件处理
+            try{
+                Standard.loadData(filePath);
+                tarea.append("\n导入成功");
+            }catch (Exception ex){
+                tarea.append("\n导入失败\n"+ex.getMessage());
+            }
         }
     }
 

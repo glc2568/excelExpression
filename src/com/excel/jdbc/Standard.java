@@ -6,8 +6,8 @@ import com.excel.pojo.Adpm;
 import com.excel.readandwrite.AdpmList;
 import com.excel.readandwrite.ReadExcel;
 import com.excel.util.Property;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,12 +15,12 @@ import java.sql.*;
 import java.util.List;
 
 public class Standard {
-    private static final Logger log = LoggerFactory.getLogger(Standard.class);
+//    private static final Logger log = LoggerFactory.getLogger(Standard.class);
     public static void main(String[] args) throws IOException {
 
-        String  path ="temp";
+        String  path ="D:\\WorkProject\\shanghai_bank\\new\\9月-长亮.xls";
         ReadExcel rw=new ReadExcel();
-//            List<List<String>> lists = rw.read("/Users/gaoleichao/Desktop/job/adpm/9月-长亮.xls",1);
+//            List<List<String>> lists = rw.read("D:\WorkProject\shanghai_bank\new\9月-长亮.xls",1);
         List<List<String>> lists = rw.read(path,0);
         String fileName = path.substring(path.lastIndexOf(File.separator)+1);
         for (List<String> list:lists){
@@ -28,6 +28,15 @@ public class Standard {
             getSqlcon(adpm);
         }
 
+    }
+
+    public static void loadData(String path){
+        ReadExcel rw=new ReadExcel();
+        List<List<String>> adpmList = rw.read(path, 1);
+        for (int i = 0; i < adpmList.size(); i++) {
+            Adpm adpm = AdpmList.getAdpm(adpmList.get(i),String.valueOf(i));
+            Standard.getSqlcon(adpm);
+        }
     }
 
     public static void getSqlcon(Adpm adpm){
@@ -74,7 +83,7 @@ public class Standard {
             pst.setString( 19,adpm.getDemandNumber());
             pst.setString( 20,adpm.getDemandName());
             pst.setString( 21,adpm.getApplyName());
-            pst.setString( 11,adpm.getApplyID());
+            pst.setString( 22,adpm.getApplyID());
             int result = pst.executeUpdate();
             System.out.println(result > 0 ? "数据插入成功":"数据插入失败");
 
@@ -88,9 +97,11 @@ public class Standard {
 //
 //            }
         }catch(Exception e){
-            log.debug("hello");
-            log.error("数据库连接报错：{}",e.getMessage());
-            e.getStackTrace();
+//            log.debug("hello");
+//            log.error("数据库连接报错：{}",e.getMessage());
+
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
         //释放资源
         finally{
