@@ -33,8 +33,9 @@ public class Standard {
     public static void loadData(String path){
         ReadExcel rw=new ReadExcel();
         List<List<String>> adpmList = rw.read(path, 1);
+        String fileName = path.substring(path.lastIndexOf(File.separator) + 1) + "_" + adpmList.size();
         for (int i = 0; i < adpmList.size(); i++) {
-            Adpm adpm = AdpmList.getAdpm(adpmList.get(i),String.valueOf(i));
+            Adpm adpm = AdpmList.getAdpm(adpmList.get(i),fileName);
             Standard.getSqlcon(adpm);
         }
     }

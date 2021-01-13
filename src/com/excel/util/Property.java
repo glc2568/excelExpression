@@ -1,7 +1,5 @@
 package com.excel.util;
 
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +48,6 @@ public class Property {
 
         try {
             System.setProperty("log4j.defaultInitOverride", "1");
-            PropertyConfigurator.configure(configurationPath.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
