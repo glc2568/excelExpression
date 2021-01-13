@@ -14,7 +14,7 @@ public class Main {
 //       rw.getXlsxAndXls("/Users/gaoleichao/Desktop/job/adpm/adpm汇总.xlsx");
 
                ReadExcel rw=new ReadExcel();
-       rw.read("/Users/gaoleichao/Desktop/job/adpm/9月-长亮.xls",0);
+       rw.read("/Users/gaoleichao/Desktop/job/adpm/adpm汇总.xlsx",0);
     }
 
 }

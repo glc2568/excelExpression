@@ -3,7 +3,7 @@ package com.excel.pojo;
 public class Adpm {
 
 //    序号
-private long no;
+private String no;
 //    部门
 private String department;
 //    公司
@@ -52,11 +52,11 @@ private String applyID;
     }
 
 
-    public long getNo() {
+    public String getNo() {
         return no;
     }
 
-    public void setNo(long no) {
+    public void setNo(String no) {
         this.no = no;
     }
 
@@ -228,7 +228,7 @@ private String applyID;
         this.applyID = applyID;
     }
 
-    public Adpm(long no, String department, String company, String mode, String workType, String developArea, String personLevel, String name, String userName, String workDate, String week, String taskCategories, String taskCategory, String taskName, String taskNumber, String taskDesc, String actualHours, String demandType, String demandNumber, String demandName, String applyName, String applyID) {
+    public Adpm(String no, String department, String company, String mode, String workType, String developArea, String personLevel, String name, String userName, String workDate, String week, String taskCategories, String taskCategory, String taskName, String taskNumber, String taskDesc, String actualHours, String demandType, String demandNumber, String demandName, String applyName, String applyID) {
         this.no = no;
         this.department = department;
         this.company = company;

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class AdpmList {
 
-    public static Adpm getAdpm(List<String> row){
+    public static Adpm getAdpm(List<String> row,String no){
         int j = 0;
         Adpm adpm = new Adpm();
         adpm.setDepartment(row.get(j).toString());
@@ -30,6 +30,7 @@ public class AdpmList {
         adpm.setDemandName(row.get(j + 18).toString());
         adpm.setApplyName(row.get(j + 19).toString());
         adpm.setApplyID(row.get(j + 20).toString());
+        adpm.setNo(no);
         return adpm;
     }
 

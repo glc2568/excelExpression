@@ -266,7 +266,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
                     }
                     rowLst.add(cellValue);
                 }
-               Adpm adpm = AdpmList.getAdpm(rowLst);
+               Adpm adpm = AdpmList.getAdpm(rowLst,null);
                 System.out.println("rowLst====\t"+ JSON.toJSONString(adpm));
                 /** 保存第r行的第c列 */
                 dataLst.add(rowLst);
