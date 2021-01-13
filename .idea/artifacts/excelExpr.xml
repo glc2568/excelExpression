@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="excelExpr">
-    <output-path>$PROJECT_DIR$/out/artifacts/excelExpr</output-path>
-    <root id="archive" name="excelExpr.jar">
-      <element id="module-output" name="excelExpression" />
-    </root>
-  </artifact>
-</component>
