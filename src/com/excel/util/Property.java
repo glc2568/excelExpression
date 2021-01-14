@@ -1,9 +1,7 @@
 package com.excel.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,8 +13,6 @@ import java.util.Properties;
  * 获取配置文件类
  */
 public class Property {
-    private static final Logger log = LoggerFactory.getLogger(Property.class);
-
     /**
      * 获取数据库配置
      * @return
@@ -25,7 +21,9 @@ public class Property {
     public static Properties getDataPropery() throws IOException {
         Properties properties = new Properties();
         // 使用InPutStream流读取properties文件
-        BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/gaoleichao/Desktop/job/temp/excelExpression/config/config.properties"));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(System.getProperty("user.dir")+File.separator+"config"+File.separator+"config.properties"));
+
+//        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:"+ File.separator+"glc"+File.separator+"config.properties"));
         // 使用properties对象加载输入流
         properties.load(bufferedReader);
         //获取key对应的value值

@@ -1,6 +1,5 @@
 package com.excel.readandwrite;
 
-import com.alibaba.fastjson.JSON;
 import com.excel.pojo.Adpm;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -68,7 +67,7 @@ public class ExcelRW {
                 adpm.setDemandName(row.getCell(j + 18).toString());
                 adpm.setApplyName(row.getCell(j + 19).toString());
                 adpm.setApplyID(row.getCell(j + 20).toString());
-                System.out.println("adpmRead====\t"+ JSON.toJSONString(adpm));
+                System.out.println("adpmRead====\t"+ adpm.toString());
                 list.add(adpm);
             }
         } catch (java.io.IOException e) {
@@ -112,7 +111,7 @@ public class ExcelRW {
                 adpm.setDemandName(row.getCell(j + 18).toString());
                 adpm.setApplyName(row.getCell(j + 19).toString());
                 adpm.setApplyID(row.getCell(j + 20).toString());
-                System.out.println("adpmRead====\t"+ JSON.toJSONString(adpm));
+                System.out.println("adpmRead====\t"+ adpm.toString());
                 list.add(adpm);
             }
         } catch (java.io.IOException e) {

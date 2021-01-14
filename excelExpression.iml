@@ -7,73 +7,73 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/mysql-connector-java-8.0.19.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/commons-logging-1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/excel/poi-3.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/dom4j-2.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/excel/poi-ooxml-3.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/log4j-1.2.17.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/excel/poi-ooxml-schemas-3.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/log4j-core-2.13.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/fastjson-1.2.60.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mysql-connector-java-8.0.19.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/slf4j-api-1.7.30.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/poi-3.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/slf4j-nop-1.7.30.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/poi-ooxml-3.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../excelExpr/ApachePoiAllJar/excel/dom4j-2.1.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/poi-ooxml-schemas-3.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

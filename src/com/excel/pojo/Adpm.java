@@ -252,4 +252,32 @@ private String applyID;
         this.applyName = applyName;
         this.applyID = applyID;
     }
+
+    @Override
+    public String toString() {
+        return "Adpm{" +
+                "no='" + no + '\'' +
+                ", department='" + department + '\'' +
+                ", company='" + company + '\'' +
+                ", mode='" + mode + '\'' +
+                ", workType='" + workType + '\'' +
+                ", developArea='" + developArea + '\'' +
+                ", personLevel='" + personLevel + '\'' +
+                ", name='" + name + '\'' +
+                ", userName='" + userName + '\'' +
+                ", workDate='" + workDate + '\'' +
+                ", week='" + week + '\'' +
+                ", taskCategories='" + taskCategories + '\'' +
+                ", taskCategory='" + taskCategory + '\'' +
+                ", taskName='" + taskName + '\'' +
+                ", taskNumber='" + taskNumber + '\'' +
+                ", taskDesc='" + taskDesc + '\'' +
+                ", actualHours='" + actualHours + '\'' +
+                ", demandType='" + demandType + '\'' +
+                ", demandNumber='" + demandNumber + '\'' +
+                ", demandName='" + demandName + '\'' +
+                ", applyName='" + applyName + '\'' +
+                ", applyID='" + applyID + '\'' +
+                '}';
+    }
 }

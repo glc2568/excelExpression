@@ -1,7 +1,11 @@
 package com.excel.expression;
 
 
+import java.io.File;
+import java.util.logging.Logger;
+
 public class ExcelCalc {
+	private static Logger log = Logger.getLogger("lavasoft");
 
 	public void test1() {
 
@@ -35,7 +39,8 @@ public class ExcelCalc {
 		}
 		System.out.println("holidays=================" + holidays);
 		if (type == 1)
-			return getBeginOrEndDate(beginDate, day, holidays);
+			return System.getProperty("user.dir")+ File.separator+"config"+File.separator+"config.properties";
+//			return getBeginOrEndDate(beginDate, day, holidays);
 		if (type == 2)
 			return getBeginSubtrEndDate(beginDate, endDate, holidays);
 		if (type == 3)

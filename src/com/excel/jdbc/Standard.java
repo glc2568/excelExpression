@@ -1,20 +1,21 @@
 package com.excel.jdbc;
 
 
-import com.excel.expression.ExcelCalc;
 import com.excel.pojo.Adpm;
 import com.excel.readandwrite.AdpmList;
 import com.excel.readandwrite.ReadExcel;
 import com.excel.util.Property;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
 public class Standard {
+
+    private static Logger log = Logger.getLogger("lavasoft");
+
 //    private static final Logger log = LoggerFactory.getLogger(Standard.class);
     public static void main(String[] args) throws IOException {
 
@@ -31,6 +32,8 @@ public class Standard {
     }
 
     public static void loadData(String path){
+        log.setLevel(Level.FINEST);
+        log.info("开始数据加载loadData");
         ReadExcel rw=new ReadExcel();
         List<List<String>> adpmList = rw.read(path, 1);
         String fileName = path.substring(path.lastIndexOf(File.separator) + 1) + "_" + adpmList.size();
@@ -41,6 +44,8 @@ public class Standard {
     }
 
     public static void getSqlcon(Adpm adpm){
+        log.setLevel(Level.FINEST);
+        log.info("数据库交互getSqlcon》》》》》》》》》》》");
         //获取连接
         Connection con = null;
         //创建statement对象
@@ -86,7 +91,8 @@ public class Standard {
             pst.setString( 21,adpm.getApplyName());
             pst.setString( 22,adpm.getApplyID());
             int result = pst.executeUpdate();
-            System.out.println(result > 0 ? "数据插入成功":"数据插入失败");
+            log.info(result > 0 ? "数据插入成功":"数据插入失败");
+
 
             //查询
 //            resultSet = statement.executeQuery(sql);
@@ -102,6 +108,7 @@ public class Standard {
 //            log.error("数据库连接报错：{}",e.getMessage());
 
             e.printStackTrace();
+            log.info("异常》》》》》》》》》》》"+e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
         //释放资源
@@ -111,6 +118,7 @@ public class Standard {
                     resultSet.close();
                 } catch (Exception e1) {
                     e1.printStackTrace();
+                    log.info("异常关闭resultSet》》》》》》》》》》》"+e1.getMessage());
                 }
             }
             if (pst != null) {
@@ -118,6 +126,8 @@ public class Standard {
                     pst.close();
                 } catch (Exception e1) {
                     e1.printStackTrace();
+                    log.info("异常关闭pst》》》》》》》》》》》"+e1.getMessage());
+
                 }
             }
             if (con != null) {
@@ -125,6 +135,8 @@ public class Standard {
                     con.close();
                 } catch (Exception e1) {
                     e1.printStackTrace();
+                    log.info("异常关闭con》》》》》》》》》》》"+e1.getMessage());
+
                 }
             }
         }

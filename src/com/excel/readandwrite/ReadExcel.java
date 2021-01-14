@@ -12,8 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.alibaba.fastjson.JSON;
 import com.excel.pojo.Adpm;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
@@ -31,7 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
      * @author ChuanJing
      */
     public class ReadExcel {
-
+        private static Logger log = Logger.getLogger("lavasoft");
         /** 总行数 */
         private int totalRows = 0;
 
@@ -267,7 +268,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
                     rowLst.add(cellValue);
                 }
                Adpm adpm = AdpmList.getAdpm(rowLst,null);
-                System.out.println("rowLst====\t"+ JSON.toJSONString(adpm));
+                log.setLevel(Level.FINEST);
+                log.info("rowLst====\t"+ adpm.toString());
+
                 /** 保存第r行的第c列 */
                 dataLst.add(rowLst);
             }

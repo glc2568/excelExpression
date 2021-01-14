@@ -2,19 +2,22 @@ package com.excel;
 
 
 import com.excel.expression.ExcelExpression;
-import com.excel.readandwrite.ExcelRW;
-import com.excel.readandwrite.ReadExcel;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
+//    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        System.out.println("hello world");
+        java.util.logging.Logger log = Logger.getLogger("lavasoft");
+        log.setLevel(Level.FINEST);
+        log.info("启动中。。。");
         ExcelExpression LD=new ExcelExpression();
 
 //       ExcelRW rw=new ExcelRW();
 //       rw.getXlsxAndXls("/Users/gaoleichao/Desktop/job/adpm/adpm汇总.xlsx");
 
-               ReadExcel rw=new ReadExcel();
 //       rw.read("/Users/gaoleichao/Desktop/job/adpm/adpm汇总.xlsx",0);
     }
 
