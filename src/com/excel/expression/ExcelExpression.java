@@ -18,6 +18,7 @@ public class ExcelExpression extends JFrame  implements ActionListener {
     JTextField endDate;// 计划完成日期
     JTextField acTualFinish;// 实际完成百分比
     JTextField holidays;// 为空时默认（不剔除节假日，周六周日）
+    JTextField adpmPath;//根目录
     JComboBox comboBox;
     JFileChooser jfc=new  JFileChooser(new File("."));
     //窗口：
@@ -78,12 +79,12 @@ public class ExcelExpression extends JFrame  implements ActionListener {
         holidays.setBounds(115, 175, 100, 30);
         window.add(holidays);
 
-        JLabel adpmFile =new JLabel("导入adpm文件：");
-        adpmFile.setBounds(20,195,110,50);
+        JLabel adpmFile =new JLabel("导入多adpm文件根路径：");
+        adpmFile.setBounds(20,195,160,50);
         window.add(adpmFile);
-        holidays=new JTextField();
-        holidays.setBounds(115, 175, 100, 30);
-        window.add(holidays);
+        adpmPath=new JTextField();
+        adpmPath.setBounds(165, 205, 300, 30);
+        window.add(adpmPath);
 
 //        JLabel typeIn =new JLabel("选择类型：");
 //        typeIn.setBounds(350,15,100,50);
@@ -97,12 +98,13 @@ public class ExcelExpression extends JFrame  implements ActionListener {
         label.setBounds(350,15,110,50);
         window.add(label);
         comboBox=new JComboBox();
+        comboBox.addItem("读多Excel文件");
         comboBox.addItem(1);
         comboBox.addItem(2);
         comboBox.addItem(3);
         comboBox.addItem(4);
         comboBox.addItem(5);
-        comboBox.setBounds(410, 25, 65, 30);
+        comboBox.setBounds(410, 25, 165, 30);
         window.add(comboBox);
         comboBox.addActionListener(this);
 
@@ -155,11 +157,45 @@ public class ExcelExpression extends JFrame  implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btn1) {//按钮1事件处理
             String str;
+            String result ="";
             try {
                  int index = comboBox.getSelectedIndex();
-                 int []array = {1,2,3,4,5};
+                 int []array = {888,1,2,3,4,5};
                 ExcelCalc ec = new ExcelCalc();
-                String result  = "="+ec.rateStatusExpression(array[index], beginDate.getText(), day.getText(), systemDate.getText(), endDate.getText(), acTualFinish.getText(), holidays.getText());
+                if(array[index] == 888 ) {
+                    if(null != adpmPath.getText() && !("".equals(adpmPath.getText()))){
+                        tarea.append("\n目录路径："+adpmPath.getText());
+                        File file = new File(adpmPath.getText());
+                        if(!file.exists()){
+                            throw new RuntimeException("文件目录不存在");
+                        }
+                        File[] listFiles = file.listFiles();
+                        File filename;
+                        for (int i = 0; i < listFiles.length; i++) {
+                            filename = listFiles[i];
+                            Standard.loadData(filename.getAbsolutePath());
+                            tarea.append("\n【"+filename.getAbsolutePath()+"】已成功导入");
+                        }
+                        return;
+                    }else{
+                        result ="目录下无文件";
+                    }
+
+                    Standard.loadData(filePath);
+
+                    try{
+                        Standard.loadData(filePath);
+                        tarea.append("\n导入成功");
+                    }catch (Exception ex){
+                        tarea.append("\n导入失败\n"+ex.getMessage());
+                    }
+
+
+                }else{
+                     result = "=" + ec.rateStatusExpression(array[index], beginDate.getText(), day.getText(), systemDate.getText(), endDate.getText(), acTualFinish.getText(), holidays.getText());
+
+                }
+
                 tarea.setText(result);
             } catch (Exception e1) {//如果有错误，这里进行处理
                 e1.printStackTrace();
