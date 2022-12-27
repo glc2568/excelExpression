@@ -1,6 +1,7 @@
 package com.sunline.glc.jmeter;
 
 
+import com.alibaba.fastjson.JSON;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -195,6 +196,27 @@ public class CommSunlineUtils {
         return dataMap;
     }
 
+
+
+    /**
+     * 直接读取指定路径下Sheet页，指定案例编号的案例，以Key-Value的形式返回
+     * @param path 路径
+     * @param sheetName Sheet名
+     * @return
+     *
+     */
+    public static List<String> getAllCaseName(String path, String sheetName) {
+        log.info("==========getAllCaseName=============beging>>>>>>>>>>>>>>>>>>>>>>2");
+        List<String> list = new ArrayList<String>();
+        Map<String, HashMap<String, String>> stringHashMapMap = readExcelPkg(path, sheetName);
+        for(String key :stringHashMapMap.keySet()){
+            list.add(key);
+        }
+        log.info("=========list===>>>>>>>>>>>>>>>>>>>>>>" + list.toString());
+        log.info("==========getAllCaseName=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<2");
+        return list;
+    }
+
     /**
      * 直接读取指定路径下Sheet页，指定案例编号的案例，以Key-Value的形式返回
      * @param path 路径
@@ -215,23 +237,57 @@ public class CommSunlineUtils {
         return map;
     }
 
+    /**
+     * 直接读取指定路径下Sheet页，指定案例编号的案例，以Key-Value的形式返回
+     * @param path 路径
+     * @param sheetName Sheet名
+     * @param caseNo 案例编号
+     * @return
+     *
+     */
+    public static String readExcelPkgJson(String path, String sheetName, String caseNo) {
+        log.info("==========readExcelPkgJson=============beging>>>>>>>>>>>>>>>>>>>>>>3");
+        Map<String,String> map = new HashMap<String, String>() ;
+        Map<String, HashMap<String, String>> stringHashMapMap = readInput(path, 0, sheetName, caseNo);
+        map = stringHashMapMap.get(caseNo);
+        log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+JSON.toJSONString(map));
+        log.info("==========readExcelPkgJson=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
 
+        return JSON.toJSONString(map);
+    }
 
     /**
      *读取指定路径下的整个Sheet页，返回一个Map<String,Map<String,String>>其中外层Map的Key为案例编号，
      * 内层Map的Key为Excel的列名
      * @param path 路径
      * @param sheetName Sheet名
-     * @return
+     * @return MAP
      */
     public static Map<String,HashMap<String,String>>  readExcelPkg(String path, String sheetName) {
         log.info("==========readExcelPkg=============beging>>>>>>>>>>>>>>>>>>>>>>2");
 
         Map<String, HashMap<String, String>> stringHashMapMap = readInput(path, 0, sheetName, null);
-        log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+stringHashMapMap.toString());
+        log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+ JSON.toJSONString(stringHashMapMap));
         log.info("==========readExcelPkg=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<2");
         return stringHashMapMap;
     }
+
+    /**
+     *读取指定路径下的整个Sheet页，返回一个Map<String,Map<String,String>>其中外层Map的Key为案例编号，
+     * 内层Map的Key为Excel的列名
+     * @param path 路径
+     * @param sheetName Sheet名
+     * @return JSON
+     */
+    public static String  readExcelPkgJson(String path, String sheetName) {
+        log.info("==========readExcelPkgJson=============beging>>>>>>>>>>>>>>>>>>>>>>2");
+
+        Map<String, HashMap<String, String>> stringHashMapMap = readInput(path, 0, sheetName, null);
+        log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+ JSON.toJSONString(stringHashMapMap));
+        log.info("==========readExcelPkgJson=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<2");
+        return JSON.toJSONString(stringHashMapMap);
+    }
+
 
     /**
      * 将excel文件中sheet页名称和下标以<sheet名，下标>返回
@@ -467,7 +523,7 @@ public class CommSunlineUtils {
      * @param sheetName 为空时，默认读取所有sheet页码
      * @return：List  最后读取的结果，数据结构：List<List<String>>
      */
-    public static Map<String,HashMap<String,String>> readOutput(String filePath, String sheetName, String caseNo,List<String> writeStrings,String outPathName) {
+    public static Map<String,HashMap<String,String>> readOutput(String filePath, String sheetName, String caseNo,List<String> writeStrings) {
         log.info("==========readOutput=============beging>>>>>>>>>>>>>>>>>>>>>>");
 
 
@@ -490,7 +546,7 @@ public class CommSunlineUtils {
             /** 调用本类提供的根据流读取的方法 */
             File file = new File(filePath);
             is = new FileInputStream(file);
-                dataMap = writeExcel(is, isExcel2003,sheetName,caseNo,writeStrings,outPathName);
+                dataMap = writeExcel(is, isExcel2003,sheetName,caseNo,writeStrings,filePath);
             is.close();
 
         } catch (Exception ex) {
