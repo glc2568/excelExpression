@@ -1,4 +1,4 @@
-package com.excel.pojo;
+package com.glc.pojo;
 
 public class Adpm {
 

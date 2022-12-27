@@ -1,14 +1,11 @@
-package com.excel.expression;
+package com.glc.excel.expression;
 
-import com.excel.jdbc.Standard;
+import com.glc.jdbc.Standard;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class ExcelExpression extends JFrame  implements ActionListener {
     JTextField type;

@@ -1,12 +1,12 @@
-package com.excel.readandwrite;
+package com.glc.excel.readandwrite;
 
-import com.excel.pojo.Adpm;
+import com.glc.pojo.Adpm;
 
 import java.util.List;
 
 public class AdpmList {
 
-    public static Adpm getAdpm(List<String> row,String no){
+    public static Adpm getAdpm(List<String> row, String no){
         int j = 0;
         Adpm adpm = new Adpm();
         adpm.setDepartment(row.get(j).toString());

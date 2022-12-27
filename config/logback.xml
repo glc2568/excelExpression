@@ -5,7 +5,7 @@
     <!-- 本地环境
     <property name="LOG_HOME" value="C:/logs" />-->
 <!--   内测环境-->
-    <property name="LOG_HOME" value="/Users/gaoleichao/Desktop/job/my_project/FileBatchStateModify" />
+    <property name="LOG_HOME" value="/Users/gaoleichao/Desktop/job/temp/excelExpression/out/production/excelExpression" />
     <!-- SIT环境
     <property name="LOG_HOME" value="/home/application/webapps/logs" />
     -->

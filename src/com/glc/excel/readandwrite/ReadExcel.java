@@ -1,4 +1,4 @@
-package com.excel.readandwrite;
+package com.glc.excel.readandwrite;
 
 
 
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.excel.pojo.Adpm;
+import com.glc.pojo.Adpm;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -29,7 +29,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
     /**
      * 读取 excel表格，兼容2003和2007
-     * @author ChuanJing
+     * @author gaolc
      */
     public class ReadExcel {
         private static Logger log = Logger.getLogger("lavasoft");
@@ -180,9 +180,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
         private List<List<String>> read(Workbook wb, int ignoreRows) {
             List<List<String>> dataLst = new ArrayList<List<String>>();
 
+            wb.getNumCellStyles();
             /** 得到第一个shell */
             Sheet sheet = wb.getSheetAt(0);
-
             /** 得到Excel的行数 */
             this.totalRows = sheet.getPhysicalNumberOfRows();
 
@@ -236,7 +236,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
                                     if (temp.equals("General")) {
                                         format.applyPattern("#");
                                     }
-                                    cellValue = format.format(value);
+//                                    cellValue = format.format(value);
+                                    cellValue = value+"";
                                 }
                                 break;
 
@@ -267,9 +268,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
                     }
                     rowLst.add(cellValue);
                 }
-               Adpm adpm = AdpmList.getAdpm(rowLst,null);
+//               Adpm adpm = AdpmList.getAdpm(rowLst,null);
                 log.setLevel(Level.FINEST);
-                log.info("rowLst====\t"+ adpm.toString());
+                log.info("rowLst====\t"+ rowLst.toString());
 
                 /** 保存第r行的第c列 */
                 dataLst.add(rowLst);

@@ -1,10 +1,10 @@
-package com.excel.jdbc;
+package com.glc.jdbc;
 
 
-import com.excel.pojo.Adpm;
-import com.excel.readandwrite.AdpmList;
-import com.excel.readandwrite.ReadExcel;
-import com.excel.util.Property;
+import com.glc.pojo.Adpm;
+import com.glc.excel.readandwrite.AdpmList;
+import com.glc.excel.readandwrite.ReadExcel;
+import com.glc.util.Property;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
