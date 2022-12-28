@@ -212,10 +212,12 @@ public class CommSunlineUtils {
         for(String key :stringHashMapMap.keySet()){
             list.add(key);
         }
+        list.sort(Comparator.naturalOrder());
         log.info("=========list===>>>>>>>>>>>>>>>>>>>>>>" + list.toString());
         log.info("==========getAllCaseName=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<2");
         return list;
     }
+
 
     /**
      * 直接读取指定路径下Sheet页，指定案例编号的案例，以Key-Value的形式返回
@@ -581,23 +583,18 @@ public class CommSunlineUtils {
             //根据行指定列坐标j,然后在单元格中写入数据
             Cell cell = row.createCell(cellNumber+j);
             String result= writeStrings.get(j);
-            if(result.contains("成功") || result.contains("SUCCESS")){
-                Font font = workbook.createFont();
+            Font font = workbook.createFont();
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            XSSFRichTextString ts= new XSSFRichTextString(result);
+            ts.applyFont(0,ts.length(),font);
+            if(result.contains("成功") || result.contains("SUCCESS") || result.contains("success") ){
 //                font.setFontHeightInPoints((short) 12); // 字体高度
 //                font.setFontName("宋体"); // 字体
-                font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
                 font.setColor(HSSFColor.GREEN.index);  //颜色
-                XSSFRichTextString ts= new XSSFRichTextString(result);
-                ts.applyFont(0,ts.length(),font);  //从4开始
-                cell.setCellValue(ts);
-            }else if(result.contains("失败") || result.contains("Fail")){
-                Font font = workbook.createFont();
-                font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            }else if(result.contains("失败") || result.contains("Fail") || result.contains("FAIL") || result.contains("fail")){
                 font.setColor(HSSFColor.RED.index);  //颜色
-                XSSFRichTextString ts= new XSSFRichTextString(result);
-                ts.applyFont(0,ts.length(),font);  //从4开始
-                cell.setCellValue(ts);
             }
+            cell.setCellValue(ts);
         }
         OutputStream stream = null;
         try {
