@@ -585,8 +585,6 @@ public class CommSunlineUtils {
             String result= writeStrings.get(j);
             Font font = workbook.createFont();
             font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-            XSSFRichTextString ts= new XSSFRichTextString(result);
-            ts.applyFont(0,ts.length(),font);
             if(result.contains("成功") || result.contains("SUCCESS") || result.contains("success") ){
 //                font.setFontHeightInPoints((short) 12); // 字体高度
 //                font.setFontName("宋体"); // 字体
@@ -594,6 +592,8 @@ public class CommSunlineUtils {
             }else if(result.contains("失败") || result.contains("Fail") || result.contains("FAIL") || result.contains("fail")){
                 font.setColor(HSSFColor.RED.index);  //颜色
             }
+            XSSFRichTextString ts= new XSSFRichTextString(result);
+            ts.applyFont(0,ts.length(),font);
             cell.setCellValue(ts);
         }
         OutputStream stream = null;

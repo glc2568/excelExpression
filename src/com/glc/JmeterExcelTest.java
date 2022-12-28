@@ -27,9 +27,9 @@ public class JmeterExcelTest {
         List<String> list =  new ArrayList<String>();
         list.add("Success成功");
         list.add("Fail失败");
-//        CommSunlineUtils.readOutput("/Users/gaoleichao/Desktop/temp/testExcel.xlsx", "Sheet1","T-3",list);
-        List<String> sheet11 = CommSunlineUtils.getAllCaseName("/Users/gaoleichao/Desktop/temp/testExcel.xlsx", "Sheet1");
-        log.info("==List<String>=="+ sheet11.toString());
+        CommSunlineUtils.readOutput("/Users/gaoleichao/Desktop/temp/testExcel.xlsx", "Sheet1","T-7",list);
+//        List<String> sheet11 = CommSunlineUtils.getAllCaseName("/Users/gaoleichao/Desktop/temp/testExcel.xlsx", "Sheet1");
+//        log.info("==List<String>=="+ sheet11.toString());
 
     }
 }
