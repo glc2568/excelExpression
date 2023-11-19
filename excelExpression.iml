@@ -90,5 +90,14 @@
     </orderEntry>
     <orderEntry type="library" name="fastjson-1.2.60" level="project" />
     <orderEntry type="library" name="slf4j-nop-1.7.30" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/dubbo-2.7.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

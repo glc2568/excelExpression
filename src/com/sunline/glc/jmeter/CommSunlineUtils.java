@@ -8,6 +8,10 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+
+
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -21,7 +25,8 @@ import java.util.*;
 public class CommSunlineUtils {
 
     private static Logger log = Logger.getLogger(CommSunlineUtils.class);
-
+    //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
+    public static String splitStr = "-@@-";
     /** 总行数 */
     private int totalRows = 0;
 
@@ -328,10 +333,13 @@ public class CommSunlineUtils {
         if(sheet !=null){
             for (int i=0; i < totalRows; i++){
                 row = sheet.getRow(i);
+                if (row == null)continue;
                 cell1 = row.getCell(0);
+                if (cell1 == null)continue;
                 cell1.setCellType(Cell.CELL_TYPE_STRING);
                 String cellValue0 = cell1.getStringCellValue();
-                map.put(cellValue0,i+"");
+                //行号-@@-列号-@@-单元格值.注意：存储处理对应sheet页名
+                map.put((i+1)+splitStr+0+splitStr+cellValue0,i+"");
             }
         }
         log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+map.toString());
@@ -362,8 +370,13 @@ public class CommSunlineUtils {
         if (totalRows >= 1 && sheet.getRow(ignoreRows) != null) {
             totalCells = sheet.getRow(ignoreRows).getPhysicalNumberOfCells();
         }
-        //获取第一行的值作为对应下列的key
-        Row keyRow = sheet.getRow(0);
+        //获取第一行的值作为对应下列的key，指定哪一行作为key值
+        int chooseRow = 0;
+            if (!sheet.getSheetName().equals("index")){
+                chooseRow = 5;//实际取第6行第值，上面有存在默认忽略首行判断
+            }
+
+        Row keyRow = sheet.getRow(chooseRow);
         if(caseNo ==null)return null;
         Row valueRow = sheet.getRow(Integer.parseInt(caseIndex));
         if (valueRow == null) return null;
@@ -376,10 +389,23 @@ public class CommSunlineUtils {
                 Cell cell = valueRow.getCell(c);
                 String cellKey = "";
                 String cellValue = "";
-                if(cellFirstRow ==null)continue;
-                cellKey = getValueToString(cellFirstRow);
+                if(cellFirstRow ==null || cell == null)continue;
+                //获取下标均需要➕1
+                Row rw = cellFirstRow.getRow();
+                int keyColumnIndex =cellFirstRow.getColumnIndex();
+                int keyRowIndex = cellFirstRow.getRowIndex();
+                int valueColumnIndex =  cell.getColumnIndex()+1;
+                int valueRowIndex = cell.getRowIndex()+1;
+                if (valueRowIndex == 100){
+                    log.info("100row下标");
+                }
+                CellStyle style = cellFirstRow.getCellStyle();
+                int type = cellFirstRow.getCellType();
+                //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
+                cellKey = valueRowIndex+splitStr+valueColumnIndex+splitStr+getValueToString(cellFirstRow);
+                //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
                 if (null != cell) {
-                    cellValue = getValueToString(cell);
+                    cellValue = valueRowIndex+splitStr+valueColumnIndex+splitStr+getValueToString(cell);
                     map.put(cellKey,cellValue);
                 }else{
                     map.put(cellKey,"");
@@ -485,7 +511,7 @@ public class CommSunlineUtils {
 
 
     public static Map<String,HashMap<String,String>> writeExcel(InputStream inputStream, boolean isExcel2003, String sheetName, String caseNo, List<String> writeStrings, String pathname) throws Exception {
-        log.info("==========readExcel=============beging>>>>>>>>>>>>>>>>>>>>>>5");
+        log.info("==========writeExcel=============beging>>>>>>>>>>>>>>>>>>>>>>5");
         Map<String,HashMap<String,String>>  dataMap = new HashMap<String, HashMap<String, String>>();
 
         try {
@@ -514,7 +540,125 @@ public class CommSunlineUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        log.info("==========readExcel=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<5");
+        log.info("==========writeExcel=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<5");
+        return dataMap;
+    }
+
+    /**
+     *
+     * @param inputStream
+     * @param isExcel2003
+     * @param sheetName
+     * @param pathname
+     * @return
+     * 指定对应单元格进行写入，格式：行号-@@-列号-@@-单元格值
+     */
+    public static Map<String,HashMap<String,String>> insertLineWriteExcel(InputStream inputStream, boolean isExcel2003, String sheetName, String caseValue, String pathname) throws Exception {
+        log.info("==========chooseWriteExcel=============beging>>>>>>>>>>>>>>>>>>>>>>5");
+        Map<String,HashMap<String,String>>  dataMap = new HashMap<String, HashMap<String, String>>();
+
+        try {
+
+            /** 根据版本选择创建Workbook的方式 */
+            Workbook wb = null;
+
+            if (isExcel2003) {
+                wb = new HSSFWorkbook(inputStream);
+            } else {
+                wb = new XSSFWorkbook(inputStream);
+            }
+
+            int sheetCt = wb.getNumberOfSheets();
+
+            Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
+            String sheetIndex = allSheetNameANDIndex.get(sheetName);
+            if(sheetName != null){
+                if(sheetIndex ==null)return null;
+                Sheet sheet = wb.getSheetAt(Integer.parseInt(sheetIndex));
+                int totalRows = sheet.getPhysicalNumberOfRows();
+                Map<String, String> allCellNameANDIndex = getAllCellNameANDIndex(sheet);
+
+                //指定单元格下标解析。单元格下标分隔符，如：行号-@@-列号-@@-单元格值
+                String [] strArray  =caseValue.split(splitStr);
+                int rowIndex=0;
+                int columnIndex=0;
+                String resultValue = "";
+                if (strArray.length >0) {
+                    rowIndex = Integer.parseInt(strArray[0]) - 1;
+                    columnIndex = Integer.parseInt(strArray[1]) - 1;
+                    if (strArray.length ==3){
+                        resultValue = strArray[2];
+                    }
+                }else {
+                    log.info("写入单元格异常，无下标且内容为空");
+                    return null;
+                }
+
+
+
+                chooseWrite(wb,sheet,pathname,resultValue,rowIndex,columnIndex);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("==========chooseWriteExcel=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<5");
+        return dataMap;
+    }
+
+    /**
+     *
+     * @param inputStream
+     * @param isExcel2003
+     * @param sheetName
+     * @param pathname
+     * @return
+     * 指定对应单元格进行写入，格式：行号-@@-列号-@@-单元格值
+     */
+    public static Map<String,HashMap<String,String>> chooseWriteExcel(InputStream inputStream, boolean isExcel2003, String sheetName, String caseValue, String pathname) throws Exception {
+        log.info("==========chooseWriteExcel=============beging>>>>>>>>>>>>>>>>>>>>>>5");
+        Map<String,HashMap<String,String>>  dataMap = new HashMap<String, HashMap<String, String>>();
+
+        try {
+
+            /** 根据版本选择创建Workbook的方式 */
+            Workbook wb = null;
+            if (isExcel2003) {
+                wb = new HSSFWorkbook(inputStream);
+            } else {
+                wb = new XSSFWorkbook(inputStream);
+            }
+            int sheetCt = wb.getNumberOfSheets();
+            Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
+            String sheetIndex = allSheetNameANDIndex.get(sheetName);
+            if(sheetName != null){
+                if(sheetIndex ==null)return null;
+                Sheet sheet = wb.getSheetAt(Integer.parseInt(sheetIndex));
+                int totalRows = sheet.getPhysicalNumberOfRows();
+                Map<String, String> allCellNameANDIndex = getAllCellNameANDIndex(sheet);
+                //指定单元格下标解析。单元格下标分隔符，如：行号-@@-列号-@@-单元格值
+                String [] strArray  =caseValue.split(splitStr);
+                int rowIndex=0;
+                int columnIndex=0;
+                String resultValue = "";
+                if (strArray.length >0) {
+                    rowIndex = Integer.parseInt(strArray[0]) - 1;
+                    columnIndex = Integer.parseInt(strArray[1]) - 1;
+                    if (strArray.length ==3){
+                        resultValue = strArray[2];
+                    }
+                }else {
+                    log.info("写入单元格异常，无下标且内容为空");
+                    return null;
+                }
+
+
+
+                chooseWrite(wb,sheet,pathname,resultValue,rowIndex,columnIndex);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("==========chooseWriteExcel=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<5");
         return dataMap;
     }
 
@@ -570,11 +714,66 @@ public class CommSunlineUtils {
         return dataMap;
     }
 
+
+    /**
+     * 根据文件名读取excel文件输出指定单元格位置
+     *
+     * @param filePath 文件完整路径
+     * @param sheetName 为空时，默认读取所有sheet页码
+     * @return：List  最后读取的结果，数据结构：List<List<String>>
+     */
+    public static Map<String,HashMap<String,String>> chooseReadOutput(String filePath, String sheetName, String writeStrings) {
+        log.info("==========chooseReadOutput=============beging>>>>>>>>>>>>>>>>>>>>>>");
+
+
+        Map<String,HashMap<String,String>>  dataMap = new HashMap<String, HashMap<String, String>>();
+        InputStream is = null;
+
+        try {
+            /** 验证文件是否合法 */
+            if (!validateExcel(filePath)) {
+                System.out.println(errorInfo);
+                return null;
+            }
+
+            /** 判断文件的类型，是2003还是2007 */
+            boolean isExcel2003 = true;
+            if (isExcel2007(filePath)) {
+                isExcel2003 = false;
+            }
+
+            /** 调用本类提供的根据流读取的方法 */
+            File file = new File(filePath);
+            is = new FileInputStream(file);
+            chooseWriteExcel(is, isExcel2003,sheetName,writeStrings,filePath);
+            is.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            if (is != null) {
+
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    is = null;
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+dataMap.toString());
+        log.info("==========chooseReadOutput=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        return dataMap;
+    }
+
     /**
      * WriteExcel excel = new WriteExcel("D:\\myexcel.xlsx");
      * excel.write(new String[]{"1","2"}, 0);//在第1行第1个单元格写入1,第一行第二个单元格写入2
      */
     public static void write(Workbook workbook,Sheet wrSheet,String pathname,List<String> writeStrings, int rowNumber,int cellNumber) {
+        log.info("==========write=============beging>>>>>>>>>>>>>>>>>>>>>>");
+
         //将内容写入指定的行号中
         Row row = wrSheet.getRow(rowNumber);
 //        Row row = wrSheet.createRow(rowNumber);
@@ -592,9 +791,17 @@ public class CommSunlineUtils {
             }else if(result.contains("失败") || result.contains("Fail") || result.contains("FAIL") || result.contains("fail")){
                 font.setColor(HSSFColor.RED.index);  //颜色
             }
-            XSSFRichTextString ts= new XSSFRichTextString(result);
-            ts.applyFont(0,ts.length(),font);
-            cell.setCellValue(ts);
+            XSSFRichTextString xssfTs= null;
+            HSSFRichTextString hssfTs=null;
+            try {
+                xssfTs= new XSSFRichTextString(result);
+                xssfTs.applyFont(0,xssfTs.length(),font);
+                cell.setCellValue(xssfTs);
+            }catch (Exception e){
+                hssfTs= new HSSFRichTextString(result);
+                hssfTs.applyFont(0,hssfTs.length(),font);
+                cell.setCellValue(hssfTs);
+            }
         }
         OutputStream stream = null;
         try {
@@ -606,13 +813,72 @@ public class CommSunlineUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        log.info("==========write=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
     }
 
 
 
+    /**
+     * WriteExcel excel = new WriteExcel("D:\\myexcel.xlsx");
+     * excel.write(new String[]{"1","2"}, 0);//在第1行第1个单元格写入1,第一行第二个单元格写入2
+     */
+    public static void chooseWrite(Workbook workbook,Sheet wrSheet,String pathname,String writeStrings, int rowNumber,int cellNumber) {
+        log.info("==========chooseWrite=============beging>>>>>>>>>>>>>>>>>>>>>>");
+
+        //将内容写入指定的行号中
+        Row row = wrSheet.getRow(rowNumber);//获取原来行数据
+//        Row row = wrSheet.createRow(30);//创建空行
+//        Row row = wrSheet.createRow(rowNumber);
+        //遍历整行中的列序号(从设定的列数开始写)
+//        for (int j = 0; j < writeStrings.size(); j++) {
+            //根据行指定列坐标j,然后在单元格中写入数据
+//            Cell cell = row.createCell(1);
+            Cell cell = row.getCell(cellNumber);
+            String result= writeStrings;
+            Font font = workbook.createFont();
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+//            if(result.contains("成功") || result.contains("SUCCESS") || result.contains("success") ){
+                font.setFontHeightInPoints((short) 12); // 字体高度
+                font.setFontName("宋体"); // 字体
+                font.setColor(HSSFColor.RED.index);  //颜色
+//            }else if(result.contains("失败") || result.contains("Fail") || result.contains("FAIL") || result.contains("fail")){
+//                font.setColor(HSSFColor.RED.index);  //颜色
+//            }
+        XSSFRichTextString xssfTs= null;
+        HSSFRichTextString hssfTs=null;
+        try {
+             xssfTs= new XSSFRichTextString(result);
+            xssfTs.applyFont(0,xssfTs.length(),font);
+            cell.setCellValue(xssfTs);
+        }catch (Exception e){
+            hssfTs= new HSSFRichTextString(result);
+            hssfTs.applyFont(0,hssfTs.length(),font);
+            cell.setCellValue(hssfTs);
+        }
+
+
+//        }
+        OutputStream stream = null;
+        try {
+            stream = new FileOutputStream(pathname);
+            workbook.write(stream);
+            stream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("==========chooseWrite=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+    }
+
 
 
     public static void WriteExcel(Workbook workbook,Sheet wrSheet,String excelPath,String sheetName) throws Exception {
+
+        log.info("==========WriteExcel=============beging>>>>>>>>>>>>>>>>>>>>>>");
+
         //在excelPath中需要指定具体的文件名(需要带上.xls或.xlsx的后缀)
 //        pathname = excelPath;
         String fileType = excelPath.substring(excelPath.lastIndexOf(".") + 1, excelPath.length());
@@ -628,6 +894,8 @@ public class CommSunlineUtils {
         }
         // 创建表sheet
         workbook.createSheet("sheetName");
+        log.info("==========WriteExcel=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
     }
 
 
