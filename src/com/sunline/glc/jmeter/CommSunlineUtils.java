@@ -25,6 +25,28 @@ import java.util.*;
 public class CommSunlineUtils {
 
     private static Logger log = Logger.getLogger(CommSunlineUtils.class);
+
+    //1代表执行excel测试案例使用，2代表处理excel表格数据
+    public static final int flag = 2;
+
+    //目录页sheet名称
+    public static final String sheetCatalog= "index";
+
+    //指定行为列key值
+    public static final int keyCellName= 5;
+    public static final String str = "英文名称";
+    //下标一
+    public static final String head = "head";
+    //    public static final String input = "输入";
+    public static final String inputNm = "输入";
+    public static final String input = "input";
+
+    //下标二
+    public static final String outputNm = "输出";
+    public static final String output = "output";
+
+
+
     //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
     public static String splitStr = "-@@-";
     /** 总行数 */
@@ -167,16 +189,28 @@ public class CommSunlineUtils {
             String sheetIndex = allSheetNameANDIndex.get(sheetName);
             if(sheetName != null){
                 if(sheetIndex ==null)return null;
-                Map<String, String> allCellNameANDIndex = getAllCellNameANDIndex(wb.getSheetAt(Integer.parseInt(sheetIndex)));
+                Map<String, String> allCellNameANDIndex = new HashMap<>();
+                if (flag==1){
+                    allCellNameANDIndex = getAllCellNameANDIndex(wb.getSheetAt(Integer.parseInt(sheetIndex)));
+                }else if (flag==2){
+                    allCellNameANDIndex = getChooseAllCellNameANDIndex(wb.getSheetAt(Integer.parseInt(sheetIndex)));
+                }
                 if(caseNo !=null){
                     String caseIndex = allCellNameANDIndex.get(caseNo);
-                    chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                    if (flag==1){
+                        read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                    }else if (flag==2){
+                        chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                    }
                 }else{
                     for (Map.Entry<String, String> entry : allCellNameANDIndex.entrySet()) {
                         String caseNoName = entry.getKey();
                         String caseIndex = entry.getValue();
-                        chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNoName);
-
+                        if (flag==1){
+                            read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                        }else if (flag==2){
+                            chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                        }
                     }
                 }
 
@@ -190,8 +224,11 @@ public class CommSunlineUtils {
                     for (Map.Entry<String, String> cellEntry : allCellNameANDIndex.entrySet()) {
                         String caseNoName = cellEntry.getKey();
                         String caseIndex = cellEntry.getValue();
-                        chooseRead(dataMap,wb, ignoreRows, sheetNameValue,caseIndex,caseNoName);
-                    }
+                        if (flag==1){
+                            read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                        }else if (flag==2){
+                            chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                        }                    }
                 }
             }
         } catch (IOException e) {
@@ -373,7 +410,6 @@ public class CommSunlineUtils {
         }
         //获取第一行的值作为对应下列的key
         Row keyRow = sheet.getRow(0);
-        if(caseNo ==null)return null;
         Row valueRow = sheet.getRow(Integer.parseInt(caseIndex));
         if (valueRow == null) return null;
         HashMap<String,String> map = new HashMap<String, String>() ;
@@ -456,45 +492,87 @@ public class CommSunlineUtils {
         if (totalRows >= 1 && sheet.getRow(ignoreRows) != null) {
             totalCells = sheet.getRow(ignoreRows).getPhysicalNumberOfCells();
         }
-        //获取第一行的值作为对应下列的key，指定哪一行作为key值
+
+        int inputIndex = 0;
+        int outputIndex = 0;
+        //获取第一行的值作为对应下列的key，指定哪一行作为key值L
         int chooseRow = 0;
-            if (!sheet.getSheetName().equals("index")){
-                chooseRow = 5;//实际取第6行第值，上面有存在默认忽略首行判断
+            if (!sheet.getSheetName().equals(sheetCatalog)){
+                chooseRow = keyCellName;//实际取第6行第值，上面有存在默认忽略首行判断
+                //获取下标位置
+                for (int c = chooseRow; c <= totalRows; c++) {
+                    Row nkeyRow = sheet.getRow(c);
+                    if (nkeyRow==null)continue;
+                    if (inputNm.equals(nkeyRow.getCell(nkeyRow.getFirstCellNum()).getStringCellValue())){
+                        inputIndex=c;
+                    }else if(outputNm.equals(nkeyRow.getCell(nkeyRow.getFirstCellNum()).getStringCellValue())){
+                        outputIndex=c;
+                    }
+
+                }
+
             }
 
+
+
         Row keyRow = sheet.getRow(chooseRow);
-        if(caseNo ==null)return null;
+
         Row valueRow = sheet.getRow(Integer.parseInt(caseIndex));
         if (valueRow == null) return null;
         HashMap<String,String> map = new HashMap<String, String>() ;
         log.info("map======================================="+ totalCells);
         /** 循环Excel的列 */
             for (int c = 0; c <= totalCells; c++) {
+
                 //第一行key列
                 Cell cellFirstRow =keyRow.getCell(c);
                 Cell cell = valueRow.getCell(c);
                 String cellKey = "";
                 String cellValue = "";
                 if(cellFirstRow ==null || cell == null)continue;
+
                 //获取下标均需要➕1
                 Row rw = cellFirstRow.getRow();
                 int keyColumnIndex =cellFirstRow.getColumnIndex();
                 int keyRowIndex = cellFirstRow.getRowIndex();
-                int valueColumnIndex =  cell.getColumnIndex()+1;
-                int valueRowIndex = cell.getRowIndex()+1;
+                int valueColumnIndex =  cell.getColumnIndex();
+                int valueRowIndex = cell.getRowIndex();
                 if (valueRowIndex == 100){
                     log.info("100row下标");
                 }
                 CellStyle style = cellFirstRow.getCellStyle();
                 int type = cellFirstRow.getCellType();
+                String key = getValueToString(cellFirstRow);
+                String value = getValueToString(cell);
+
+                //设置指定的行做为key，结合关键字进行下标设定“关键字”拼接=====================================================================
+                if (!sheet.getSheetName().equals(sheetCatalog)){
+                    if (key.trim().equals(str)){
+                        if (valueRowIndex<inputIndex){
+                            caseNo=head;
+                        }else if(valueRowIndex > inputIndex && valueRowIndex < outputIndex){
+                            caseNo=input;
+                        }else{
+                            caseNo=output;
+                        }
+                            caseNo=caseNo+splitStr+value+splitStr+value;
+                    }
+                }
+                //保证输出的下标一一对应
+                valueColumnIndex=valueColumnIndex+1;
+                valueRowIndex=valueRowIndex+1;
                 //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
-                cellKey = valueRowIndex+splitStr+valueColumnIndex+splitStr+getValueToString(cellFirstRow);
+                cellKey = valueRowIndex+splitStr+valueColumnIndex+splitStr+ key;
                 //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
                 if (null != cell) {
-                    cellValue = valueRowIndex+splitStr+valueColumnIndex+splitStr+getValueToString(cell);
+                    cellValue = valueRowIndex+splitStr+valueColumnIndex+splitStr+ value;
                     map.put(cellKey,cellValue);
                 }else{
                     map.put(cellKey,"");
+                }
+
+                if(caseNo ==null || caseNo==""){//如为空，取默认第一列作为key
+                    caseNo= cellValue;
                 }
             }
         dataMap.put(caseNo, map);            /** 保存第r行的第c列 */
@@ -612,6 +690,7 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
+            Font font= wb.createFont();
             int sheetCt = wb.getNumberOfSheets();
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
             String sheetIndex = allSheetNameANDIndex.get(sheetName);
@@ -623,7 +702,7 @@ public class CommSunlineUtils {
                 Map<String, String> allCellNameANDIndex = getAllCellNameANDIndex(sheet);
                 int caseLineIndex = Integer.parseInt(allCellNameANDIndex.get(caseNo));
                 int totalCells = sheet.getRow(caseLineIndex).getPhysicalNumberOfCells();
-                write(wb,sheet,pathname,writeStrings,caseLineIndex,totalCells+1);
+                write(wb,sheet,pathname,writeStrings,caseLineIndex,totalCells+1,font);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -655,7 +734,7 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
-
+                Font font= wb.createFont();
             int sheetCt = wb.getNumberOfSheets();
 
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
@@ -684,7 +763,7 @@ public class CommSunlineUtils {
 
 
 
-                chooseWrite(wb,sheet,pathname,resultValue,rowIndex,columnIndex);
+                chooseWrite(wb,sheet,pathname,resultValue,rowIndex,columnIndex,font);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -715,6 +794,7 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
+            Font font = wb.createFont();//声明格式
             int sheetCt = wb.getNumberOfSheets();
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
             String sheetIndex = allSheetNameANDIndex.get(sheetName);
@@ -741,7 +821,7 @@ public class CommSunlineUtils {
 
 
 
-                chooseWrite(wb,sheet,pathname,resultValue,rowIndex,columnIndex);
+                chooseWrite(wb,sheet,pathname,resultValue,rowIndex,columnIndex,font);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -859,7 +939,7 @@ public class CommSunlineUtils {
      * WriteExcel excel = new WriteExcel("D:\\myexcel.xlsx");
      * excel.write(new String[]{"1","2"}, 0);//在第1行第1个单元格写入1,第一行第二个单元格写入2
      */
-    public static void write(Workbook workbook,Sheet wrSheet,String pathname,List<String> writeStrings, int rowNumber,int cellNumber) {
+    public static void write(Workbook workbook,Sheet wrSheet,String pathname,List<String> writeStrings, int rowNumber,int cellNumber,Font font) {
         log.info("==========write=============beging>>>>>>>>>>>>>>>>>>>>>>");
 
         //将内容写入指定的行号中
@@ -870,7 +950,6 @@ public class CommSunlineUtils {
             //根据行指定列坐标j,然后在单元格中写入数据
             Cell cell = row.createCell(cellNumber+j);
             String result= writeStrings.get(j);
-            Font font = workbook.createFont();
             font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
             if(result.contains("成功") || result.contains("SUCCESS") || result.contains("success") ){
 //                font.setFontHeightInPoints((short) 12); // 字体高度
@@ -911,7 +990,7 @@ public class CommSunlineUtils {
      * WriteExcel excel = new WriteExcel("D:\\myexcel.xlsx");
      * excel.write(new String[]{"1","2"}, 0);//在第1行第1个单元格写入1,第一行第二个单元格写入2
      */
-    public static void chooseWrite(Workbook workbook,Sheet wrSheet,String pathname,String writeStrings, int rowNumber,int cellNumber) {
+    public static void chooseWrite(Workbook workbook,Sheet wrSheet,String pathname,String writeStrings, int rowNumber,int cellNumber,Font font) {
         log.info("==========chooseWrite=============beging>>>>>>>>>>>>>>>>>>>>>>");
 
         //将内容写入指定的行号中
@@ -924,7 +1003,6 @@ public class CommSunlineUtils {
 //            Cell cell = row.createCell(1);
             Cell cell = row.getCell(cellNumber);
             String result= writeStrings;
-            Font font = workbook.createFont();
             font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 //            if(result.contains("成功") || result.contains("SUCCESS") || result.contains("success") ){
                 font.setFontHeightInPoints((short) 12); // 字体高度
