@@ -548,14 +548,16 @@ public class CommSunlineUtils {
                 //设置指定的行做为key，结合关键字进行下标设定“关键字”拼接=====================================================================
                 if (!sheet.getSheetName().equals(sheetCatalog)){
                     if (key.trim().equals(str)){
-                        if (valueRowIndex<inputIndex){
-                            caseNo=head;
-                        }else if(valueRowIndex > inputIndex && valueRowIndex < outputIndex){
-                            caseNo=input;
-                        }else{
-                            caseNo=output;
+                        if (caseNo==null || caseNo =="") {
+                            if (valueRowIndex < inputIndex) {
+                                caseNo = head;
+                            } else if (valueRowIndex > inputIndex && valueRowIndex < outputIndex) {
+                                caseNo = input;
+                            } else {
+                                caseNo = output;
+                            }
                         }
-                            caseNo=caseNo+splitStr+value+splitStr+value;
+                            caseNo=caseNo+splitStr+value;
                     }
                 }
                 //保证输出的下标一一对应
