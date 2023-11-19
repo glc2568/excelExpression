@@ -436,6 +436,25 @@ public class CommSunlineUtils {
 
         return dataMap;
     }
+//    public HSSFFont createFont(Workbook workbook) {
+//        workbook.createFont();
+//        short fontindex = (short)(workbook.getNumberOfFonts() - 1);
+//        if (fontindex > 3) {
+//            ++fontindex;
+//        }
+//
+//        try{
+//                throw new IllegalArgumentException("Maximum number of fonts was exceeded");
+//
+//        }catch (Exception e){
+//
+//            if (fontindex == 32767) {
+//
+//            }
+//
+//                return (HSSFFont) workbook.getFontAt(fontindex);
+//        }
+//    }
 
     /**
      * 将excel文件中指定sheet页第一列单元格内容和下标以<案例编号，下标>返回
@@ -796,7 +815,9 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
-            Font font = wb.createFont();//声明格式
+
+//            Font font = wb.createFont();//声明格式
+            Font font = wb.getFontAt(1);
             int sheetCt = wb.getNumberOfSheets();
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
             String sheetIndex = allSheetNameANDIndex.get(sheetName);
