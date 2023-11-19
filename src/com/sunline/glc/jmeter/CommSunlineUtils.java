@@ -170,12 +170,12 @@ public class CommSunlineUtils {
                 Map<String, String> allCellNameANDIndex = getAllCellNameANDIndex(wb.getSheetAt(Integer.parseInt(sheetIndex)));
                 if(caseNo !=null){
                     String caseIndex = allCellNameANDIndex.get(caseNo);
-                    read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                    chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
                 }else{
                     for (Map.Entry<String, String> entry : allCellNameANDIndex.entrySet()) {
                         String caseNoName = entry.getKey();
                         String caseIndex = entry.getValue();
-                        read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNoName);
+                        chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNoName);
 
                     }
                 }
@@ -190,7 +190,7 @@ public class CommSunlineUtils {
                     for (Map.Entry<String, String> cellEntry : allCellNameANDIndex.entrySet()) {
                         String caseNoName = cellEntry.getKey();
                         String caseIndex = cellEntry.getValue();
-                        read(dataMap,wb, ignoreRows, sheetNameValue,caseIndex,caseNoName);
+                        chooseRead(dataMap,wb, ignoreRows, sheetNameValue,caseIndex,caseNoName);
                     }
                 }
             }
@@ -317,6 +317,8 @@ public class CommSunlineUtils {
         return map;
     }
 
+
+
     /**
      * 将excel文件中指定sheet页第一列单元格内容和下标以<案例编号，下标>返回
      * @param sheet
@@ -324,6 +326,88 @@ public class CommSunlineUtils {
      */
     public static Map<String,String> getAllCellNameANDIndex(Sheet sheet){
         log.info("==========getAllCellNameANDIndex=============beging>>>>>>>>>>>>>>>>>>>>>>");
+        log.info("=========sheet===>>>>>>>>>>>>>>>>>>>>>>");
+
+        Map<String,String> map = new HashMap<String, String>() ;
+        int totalRows = sheet.getPhysicalNumberOfRows();
+        Row row = null;
+        Cell cell1 = null;
+        if(sheet !=null){
+            for (int i=0; i < totalRows; i++){
+                row = sheet.getRow(i);
+                cell1 = row.getCell(0);
+                cell1.setCellType(Cell.CELL_TYPE_STRING);
+                String cellValue0 = cell1.getStringCellValue();
+                map.put(cellValue0,i+"");
+            }
+        }
+        log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+map.toString());
+        log.info("==========getAllCellNameANDIndex=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        return map;
+    }
+    /**
+     * 读取数据
+     *
+     * @param ignoreRows
+     * @param ignoreRows 读取数据忽略的行数，比喻第一行不需要读入，忽略的行数为1
+     * @reture：List<List<String>>
+     */
+    private static Map<String,HashMap<String,String>> read(Map<String, HashMap<String, String>> dataMap, Workbook wb, int ignoreRows, String sheetindex, String caseIndex, String caseNo) {
+        log.info("==========read=============beging>>>>>>>>>>>>>>>>>>>>>>");
+
+        Map<String, HashMap<String, String>> temMap = new HashMap<String, HashMap<String, String>>();
+
+        if(dataMap == null){
+            dataMap = new HashMap<String, HashMap<String, String>>();
+
+        }
+        wb.getNumCellStyles();
+        /** 得到指定shell，得到第一个输入0 */
+        Sheet sheet = wb.getSheetAt(Integer.parseInt(sheetindex));
+        /** 得到Excel的行数 */
+        Integer totalRows = sheet.getPhysicalNumberOfRows();
+        Integer totalCells = null;
+        /** 得到Excel的列数，不从表格的第一行得到列数，从忽略之后的，要读取的第一行 获取列数*/
+        if (totalRows >= 1 && sheet.getRow(ignoreRows) != null) {
+            totalCells = sheet.getRow(ignoreRows).getPhysicalNumberOfCells();
+        }
+        //获取第一行的值作为对应下列的key
+        Row keyRow = sheet.getRow(0);
+        if(caseNo ==null)return null;
+        Row valueRow = sheet.getRow(Integer.parseInt(caseIndex));
+        if (valueRow == null) return null;
+        HashMap<String,String> map = new HashMap<String, String>() ;
+        log.info("map======================================="+ totalCells);
+        /** 循环Excel的列 */
+        for (int c = 0; c <= totalCells; c++) {
+            //第一行key列
+            Cell cellFirstRow =keyRow.getCell(c);
+            Cell cell = valueRow.getCell(c);
+            String cellKey = "";
+            String cellValue = "";
+            if(cellFirstRow ==null)continue;
+            cellKey = getValueToString(cellFirstRow);
+            if (null != cell) {
+                cellValue = getValueToString(cell);
+                map.put(cellKey,cellValue);
+            }else{
+                map.put(cellKey,"");
+            }
+        }
+        dataMap.put(caseNo, map);            /** 保存第r行的第c列 */
+        log.info("map==========@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=============="+dataMap.toString());
+        log.info("==========read=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+        return dataMap;
+    }
+
+    /**
+     * 将excel文件中指定sheet页第一列单元格内容和下标以<案例编号，下标>返回
+     * @param sheet
+     * @return
+     */
+    public static Map<String,String> getChooseAllCellNameANDIndex(Sheet sheet){
+        log.info("==========getChooseAllCellNameANDIndex=============beging>>>>>>>>>>>>>>>>>>>>>>");
         log.info("=========sheet===>>>>>>>>>>>>>>>>>>>>>>");
 
         Map<String,String> map = new HashMap<String, String>() ;
@@ -343,7 +427,7 @@ public class CommSunlineUtils {
             }
         }
         log.info("=========map===>>>>>>>>>>>>>>>>>>>>>>"+map.toString());
-        log.info("==========getAllCellNameANDIndex=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        log.info("==========getChooseAllCellNameANDIndex=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         return map;
     }
     /**
@@ -353,7 +437,9 @@ public class CommSunlineUtils {
      * @param ignoreRows 读取数据忽略的行数，比喻第一行不需要读入，忽略的行数为1
      * @reture：List<List<String>>
      */
-    private static Map<String,HashMap<String,String>> read(Map<String, HashMap<String, String>> dataMap, Workbook wb, int ignoreRows, String sheetindex, String caseIndex, String caseNo) {
+    private static Map<String,HashMap<String,String>> chooseRead(Map<String, HashMap<String, String>> dataMap, Workbook wb, int ignoreRows, String sheetindex, String caseIndex, String caseNo) {
+        log.info("==========chooseRead=============beging>>>>>>>>>>>>>>>>>>>>>>");
+
         Map<String, HashMap<String, String>> temMap = new HashMap<String, HashMap<String, String>>();
 
         if(dataMap == null){
@@ -413,6 +499,8 @@ public class CommSunlineUtils {
             }
         dataMap.put(caseNo, map);            /** 保存第r行的第c列 */
         log.info("map==========@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=============="+dataMap.toString());
+        log.info("==========chooseRead=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
         return dataMap;
     }
 
@@ -634,7 +722,7 @@ public class CommSunlineUtils {
                 if(sheetIndex ==null)return null;
                 Sheet sheet = wb.getSheetAt(Integer.parseInt(sheetIndex));
                 int totalRows = sheet.getPhysicalNumberOfRows();
-                Map<String, String> allCellNameANDIndex = getAllCellNameANDIndex(sheet);
+                Map<String, String> allCellNameANDIndex = getChooseAllCellNameANDIndex(sheet);
                 //指定单元格下标解析。单元格下标分隔符，如：行号-@@-列号-@@-单元格值
                 String [] strArray  =caseValue.split(splitStr);
                 int rowIndex=0;
