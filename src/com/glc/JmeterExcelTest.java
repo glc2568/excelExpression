@@ -15,7 +15,8 @@ import java.util.*;
 public class JmeterExcelTest {
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(JmeterExcelTest.class);
     public static void main(String[] args) throws Exception {
-
+        PropertyConfigurator.configure("config/log4j.properties");
+//        oldActionCase();
 //        excelInsertLine();不支持插入
         excelExport();
 
@@ -23,16 +24,33 @@ public class JmeterExcelTest {
 
     }
 
+    public static void oldActionCase(){
+        log.info("==========oldActionCase=============beging>>>>>>>>>>>>>>>>>>>>>>3");
+        String sheet1 = CommSunlineUtils.readExcelPkgJson("C:\\Users\\GLC\\Desktop\\temp\\testExcel.xlsx", "Sheet1");
+        log.info("===="+sheet1);
+        log.info("==========oldActionCase=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
+        log.info("==========oldActionCase=============beging>>>>>>>>>>>>>>>>>>>>>>2");
+        String sheet2 = CommSunlineUtils.readExcelPkgJson("C:\\Users\\GLC\\Desktop\\temp\\testExcel.xlsx", "Sheet1","T-3");
+        log.info("===="+ sheet2);
+        log.info("==========oldActionCase=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<2");
+        String [] str ={"成功","失败"};
+        List<String> list =  new ArrayList<String>();
+        list.add("Success成功");
+        list.add("Fail失败");
+        CommSunlineUtils.readOutput("C:\\Users\\GLC\\Desktop\\temp\\testExcel.xlsx", "Sheet1","T-1",list);
+//        List<String> sheet11 = CommSunlineUtils.getAllCaseName("/Users/gaoleichao/Desktop/temp/testExcel.xlsx", "Sheet1");
+//        log.info("==List<String>=="+ sheet11.toString());
+    }
+
     //读取原excel文件输出到指定文档中
     public static void excelInsertLine() {
-        PropertyConfigurator.configure("config/log4j.properties");
-        log.info("==========readExcelPkg=============beging>>>>>>>>>>>>>>>>>>>>>>3");
+        log.info("==========excelInsertLine=============beging>>>>>>>>>>>>>>>>>>>>>>3");
         //        /Users/gaoleichao/Desktop/temp/testExcel.xlsx
         ///Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果
         String sheet1 = CommSunlineUtils.readExcelPkgJson("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge.xls", "index");
 //        log.info("===="+JSONArray.toJSON(sheet1));
-        log.info("==========readExcelPkg=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
-        log.info("==========readExcelPkg=============beging>>>>>>>>>>>>>>>>>>>>>>2");
+        log.info("==========excelInsertLine=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
+        log.info("==========excelInsertLine=============beging>>>>>>>>>>>>>>>>>>>>>>2");
         Map map = JSON.parseObject(sheet1);
         log.info("====map" + map);
         log.info("====map" + map.get("服务场景码"));
@@ -79,14 +97,13 @@ public class JmeterExcelTest {
 
             //读取原excel文件输出到指定文档中
     public static void excelExport(){
-       PropertyConfigurator.configure("config/log4j.properties");
-        log.info("==========readExcelPkg=============beging>>>>>>>>>>>>>>>>>>>>>>3");
+        log.info("==========excelExport=============beging>>>>>>>>>>>>>>>>>>>>>>3");
     //        /Users/gaoleichao/Desktop/temp/testExcel.xlsx
     ///Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果
-    String sheet1 = CommSunlineUtils.readExcelPkgJson("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge.xls", "index");
+    String sheet1 = CommSunlineUtils.readExcelPkgJson("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge.xls", "index");
 //        log.info("===="+JSONArray.toJSON(sheet1));
-        log.info("==========readExcelPkg=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
-        log.info("==========readExcelPkg=============beging>>>>>>>>>>>>>>>>>>>>>>2");
+        log.info("==========excelExport=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
+        log.info("==========excelExport=============beging>>>>>>>>>>>>>>>>>>>>>>2");
     Map map = JSON.parseObject(sheet1);
         log.info("====map"+map);
         log.info("====map"+map.get("服务场景码"));
@@ -108,8 +125,8 @@ public class JmeterExcelTest {
             continue;
         }
 
-//        if (!sheetName.equals("S10121T61019"))continue;
-        String keyIndexSheet = CommSunlineUtils.readExcelPkgJson("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge.xls", sheetName+"");
+        if (!sheetName.equals("S10121T61019"))continue;
+        String keyIndexSheet = CommSunlineUtils.readExcelPkgJson("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge.xls", sheetName+"");
         Map keySheet = JSON.parseObject(keyIndexSheet);
         if (keySheet==null)continue;
         MapRemoveNullUtil.removeNullKey(keySheet);
@@ -122,13 +139,17 @@ public class JmeterExcelTest {
 
                 log.info("====aloneKey---"+aloneKey+"---aloneCell---"+aloneCell.get(aloneKey));
 
-                CommSunlineUtils.chooseReadOutput("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge的副本.xls", sheetName,aloneCell.get(aloneKey)+"");
+                CommSunlineUtils.chooseReadOutput("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge的副本.xls", sheetName,aloneCell.get(aloneKey)+"");
 
             }
 
         }
 
         }
+
+
+
+
     }
 
 
