@@ -29,7 +29,8 @@ public class JmeterExcelTest {
         log.info("==========excelExport=============beging>>>>>>>>>>>>>>>>>>>>>>3");
         //        /Users/gaoleichao/Desktop/temp/testExcel.xlsx
         ///Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果
-        String sheet1 = CommSunlineUtils.readExcelPkgJson("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge.xls", "index");
+//        String sheet1 = CommSunlineUtils.readExcelPkgJson("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge.xls", "index");
+        String sheet1 = CommSunlineUtils.readExcelPkgJson("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge.xls", "index");
 //        log.info("===="+JSONArray.toJSON(sheet1));
         log.info("==========excelExport=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<3");
         log.info("==========excelExport=============beging>>>>>>>>>>>>>>>>>>>>>>2");
@@ -54,8 +55,9 @@ public class JmeterExcelTest {
                 continue;
             }
 
-//            if (!sheetName.equals("S10121T61019"))continue;
-            String keyIndexSheet = CommSunlineUtils.readExcelPkgJson("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge.xls", sheetName+"");
+            if (!sheetName.equals("S10121T61019"))continue;
+            String keyIndexSheet = CommSunlineUtils.readExcelPkgJson("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge.xls", sheetName+"");
+//            String keyIndexSheet = CommSunlineUtils.readExcelPkgJson("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge.xls", sheetName+"");
             Map keySheet = JSON.parseObject(keyIndexSheet);
             if (keySheet==null)continue;
             MapRemoveNullUtil.removeNullKey(keySheet);
@@ -67,8 +69,9 @@ public class JmeterExcelTest {
                 for (Object aloneKey:aloneCell.keySet()) {
 
                     log.info("====aloneKey---"+aloneKey+"---aloneCell---"+aloneCell.get(aloneKey));
+                CommSunlineUtils.chooseReadOutput("/Users/gaoleichao/Desktop/job/04.sh-bank/newCore/外围接口组/03.接口映射结果/老核心接口分析_对公存款&对私存款-merge的副本.xls", sheetName,aloneCell.get(aloneKey)+"");
 
-                    CommSunlineUtils.chooseReadOutput("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge - 副本.xls", sheetName,aloneCell.get(aloneKey)+"");
+//                    CommSunlineUtils.chooseReadOutput("D:\\shbank\\老核心接口分析_对公存款&对私存款-merge - 副本.xls", sheetName,aloneCell.get(aloneKey)+"");
 
                 }
 

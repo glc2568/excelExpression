@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -207,9 +208,9 @@ public class CommSunlineUtils {
                         String caseNoName = entry.getKey();
                         String caseIndex = entry.getValue();
                         if (flag==1){
-                            read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                            read(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNoName);
                         }else if (flag==2){
-                            chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNo);
+                            chooseRead(dataMap,wb, ignoreRows, sheetIndex,caseIndex,caseNoName);
                         }
                     }
                 }
@@ -436,25 +437,32 @@ public class CommSunlineUtils {
 
         return dataMap;
     }
-//    public HSSFFont createFont(Workbook workbook) {
-//        workbook.createFont();
-//        short fontindex = (short)(workbook.getNumberOfFonts() - 1);
-//        if (fontindex > 3) {
-//            ++fontindex;
-//        }
-//
-//        try{
-//                throw new IllegalArgumentException("Maximum number of fonts was exceeded");
-//
-//        }catch (Exception e){
-//
-//            if (fontindex == 32767) {
-//
-//            }
-//
-//                return (HSSFFont) workbook.getFontAt(fontindex);
-//        }
-//    }
+
+    //获取Font创建范围区间内的值
+    public static Font createFont(Workbook workbook,short intIndexFont) {
+        log.info("==========createFont=============beging>>>>>>>>>>>>>>>>>>>>>>");
+        short fontindex = 0;
+        if (intIndexFont <= 3){
+
+            fontindex=intIndexFont;
+        }else {
+            workbook.createFont();
+            fontindex = (short)(workbook.getNumberOfFonts() - 1);
+            if (fontindex > 3 && fontindex < 32767) {
+                ++fontindex;
+            }
+        }
+        try{
+                throw new IllegalArgumentException("Maximum number of fonts was exceeded");
+        }catch (Exception e){
+
+            fontindex = 32767;
+        }
+        log.info("==========createFont=============end<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+        return (HSSFFont) workbook.getFontAt(fontindex);
+
+    }
 
     /**
      * 将excel文件中指定sheet页第一列单元格内容和下标以<案例编号，下标>返回
@@ -472,9 +480,9 @@ public class CommSunlineUtils {
         if(sheet !=null){
             for (int i=0; i < totalRows; i++){
                 row = sheet.getRow(i);
-                if (row == null)continue;
-                cell1 = row.getCell(0);
-                if (cell1 == null)continue;
+                if (row == null)
+                    continue;
+                cell1 = row.getCell(row.getFirstCellNum());
                 cell1.setCellType(Cell.CELL_TYPE_STRING);
                 String cellValue0 = cell1.getStringCellValue();
                 //行号-@@-列号-@@-单元格值.注意：存储处理对应sheet页名
@@ -509,7 +517,7 @@ public class CommSunlineUtils {
         Integer totalCells = null;
         /** 得到Excel的列数，不从表格的第一行得到列数，从忽略之后的，要读取的第一行 获取列数*/
         if (totalRows >= 1 && sheet.getRow(ignoreRows) != null) {
-            totalCells = sheet.getRow(ignoreRows).getPhysicalNumberOfCells();
+            totalCells = sheet.getRow(ignoreRows).getPhysicalNumberOfCells()-1;
         }
 
         int inputIndex = 0;
@@ -537,9 +545,16 @@ public class CommSunlineUtils {
         Row keyRow = sheet.getRow(chooseRow);
 
         Row valueRow = sheet.getRow(Integer.parseInt(caseIndex));
+
+
+//        ==============================================2132
+        if (!sheet.getSheetName().equals(sheetCatalog)){
+            log.info(valueRow.getRowNum());
+        }
         if (valueRow == null) return null;
         HashMap<String,String> map = new HashMap<String, String>() ;
         log.info("map======================================="+ totalCells);
+
         /** 循环Excel的列 */
             for (int c = 0; c <= totalCells; c++) {
 
@@ -550,8 +565,8 @@ public class CommSunlineUtils {
                 String cellValue = "";
                 if(cellFirstRow ==null || cell == null)continue;
 
-                //获取下标均需要➕1
                 Row rw = cellFirstRow.getRow();
+                //获取下标均需要➕1
                 int keyColumnIndex =cellFirstRow.getColumnIndex();
                 int keyRowIndex = cellFirstRow.getRowIndex();
                 int valueColumnIndex =  cell.getColumnIndex();
@@ -564,29 +579,32 @@ public class CommSunlineUtils {
                 String key = getValueToString(cellFirstRow);
                 String value = getValueToString(cell);
 
+                //保证输出的下标一一对应
+                valueColumnIndex=valueColumnIndex+1;
+                valueRowIndex=valueRowIndex+1;
+                String prefix =valueRowIndex+splitStr+valueColumnIndex+splitStr;
+
                 //设置指定的行做为key，结合关键字进行下标设定“关键字”拼接=====================================================================
                 if (!sheet.getSheetName().equals(sheetCatalog)){
                     if (key.trim().equals(str)){
                         if (caseNo==null || caseNo =="") {
                             if (valueRowIndex < inputIndex) {
-                                caseNo = head;
+                                caseNo = prefix+head;
                             } else if (valueRowIndex > inputIndex && valueRowIndex < outputIndex) {
-                                caseNo = input;
+                                caseNo = prefix+input;
                             } else {
-                                caseNo = output;
+                                caseNo = prefix+output;
                             }
                         }
                             caseNo=caseNo+splitStr+value;
                     }
                 }
-                //保证输出的下标一一对应
-                valueColumnIndex=valueColumnIndex+1;
-                valueRowIndex=valueRowIndex+1;
+
                 //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
-                cellKey = valueRowIndex+splitStr+valueColumnIndex+splitStr+ key;
+                cellKey = prefix+ key;
                 //单元格下标分隔符，如：行号-@@-列号-@@-单元格值
                 if (null != cell) {
-                    cellValue = valueRowIndex+splitStr+valueColumnIndex+splitStr+ value;
+                    cellValue = prefix+ value;
                     map.put(cellKey,cellValue);
                 }else{
                     map.put(cellKey,"");
@@ -711,7 +729,8 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
-            Font font= wb.createFont();
+//           Font font = wb.createFont();//声明格式
+            Font font = wb.getFontAt((short)3);
             int sheetCt = wb.getNumberOfSheets();
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
             String sheetIndex = allSheetNameANDIndex.get(sheetName);
@@ -755,7 +774,8 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
-                Font font= wb.createFont();
+            // Font font = wb.createFont();//声明格式
+            Font font = wb.getFontAt((short)3);
             int sheetCt = wb.getNumberOfSheets();
 
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
@@ -815,9 +835,8 @@ public class CommSunlineUtils {
             } else {
                 wb = new XSSFWorkbook(inputStream);
             }
-
 //            Font font = wb.createFont();//声明格式
-            Font font = wb.getFontAt(1);
+            Font font = wb.getFontAt((short)3);
             int sheetCt = wb.getNumberOfSheets();
             Map<String, String> allSheetNameANDIndex = getAllSheetNameANDIndex(wb);
             String sheetIndex = allSheetNameANDIndex.get(sheetName);
